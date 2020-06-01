@@ -27,8 +27,8 @@ class UserCell: UITableViewCell {
     }
     
     func setValueUser(user: ModelUser) {
-        namelabel.text = user.name
-        datelabel.text = user.date
+        namelabel.text = "User: " + user.name
+        datelabel.text = "Birdth date: " + user.date
         idLabel.text = "IdCode: \(user.id)"
     }
     

@@ -20,9 +20,5 @@ class ModelUser: Object {
     //отношение 1 к одному
     //var user = ModelUser()
     
-//    init(name: String,date: String,id: Int) {
-//        self.id = id
-//        self.date = date
-//        self.name = name
-//    }
+
 }

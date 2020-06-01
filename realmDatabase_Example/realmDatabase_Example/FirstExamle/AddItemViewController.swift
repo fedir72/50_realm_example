@@ -7,12 +7,15 @@
 //
 
 import UIKit
+//import  RealmSwift
 
 
 protocol AddItemViewControllerDelegate {
     func AddUser(name: String,date: String,id: Int)
 }
 class AddItemViewController: UIViewController {
+    
+var dbManager = DBManagerImpl()
     
     var delegate: AddItemViewControllerDelegate?
     
@@ -31,8 +34,15 @@ class AddItemViewController: UIViewController {
         let name = nameTextField.text
         let date = dateTextField.text
         let id = Int(idCodeTextField.text!)
-        
+        //передаем значения для текущего массива
         self.delegate?.AddUser(name: name!, date: date!, id: id!)
+            //создаем юзера и задаем ему значения из полей
+            let user = ModelUser()
+            user.name = name!
+            user.date = date!
+            user.id = id!
+                //сохраняем юзера в реалм базу
+            self.dbManager.saveUser(user: user)
             navigationController?.popViewController(animated: true)
         }else{
             let alert = UIAlertController(title: "Atension", message: "Plea enter all data", preferredStyle: .actionSheet)

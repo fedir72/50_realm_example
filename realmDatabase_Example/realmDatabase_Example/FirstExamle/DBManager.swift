@@ -9,20 +9,24 @@
 import Foundation
 import RealmSwift
 
-
+//MARK: - класс для доступа к базеданных реалм
  
 protocol DBManager {
-    func saveUser(user: House)
-    func obtainHouses() -> [House]
+    
+    func saveUser(user: ModelUser)
+    func obtainUser() -> [ModelUser]
     func removeObject(object: Object)
+    func remoweAllObject()
+    
 }
 
 class DBManagerImpl: DBManager {
+    
     //MARK: - обращение к базеданных
     fileprivate lazy var mainRealm = try! Realm(configuration: .defaultConfiguration)
     
     //MARK: - сохранение обекта в базе данных
-    func saveUser(user: House) {
+    func saveUser(user: ModelUser) {
         
         
          try! mainRealm.write {
@@ -34,14 +38,24 @@ class DBManagerImpl: DBManager {
     func removeObject(object: Object) {
         try! mainRealm.write {
             mainRealm.delete(object)
+        
+        }
+    }
+    func remoweAllObject() {
+        try! mainRealm.write {
+            mainRealm.deleteAll()
         }
     }
     
     //MARK: - извлелчение обьектов
 
-    func obtainHouses() -> [House] {
+    func obtainUser() -> [ModelUser] {
        
-        let models = mainRealm.objects(House.self)
+        let models = mainRealm.objects(ModelUser.self)
         return  Array(models)
     }
+    
+    //MARK: - update object
+    
+    
 }

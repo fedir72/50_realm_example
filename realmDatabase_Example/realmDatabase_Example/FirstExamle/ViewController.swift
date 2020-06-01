@@ -7,10 +7,11 @@
 //
 
 import UIKit
+//import RealmSwift
 
 class ViewController: UIViewController,AddItemViewControllerDelegate {
     
-    //MARK: - DBManager
+    //MARK: -  экзэмпляр класса сохранения данных DBManager
     let dbManager: DBManager = DBManagerImpl()
    
     var arr = [ModelUser]() {
@@ -21,6 +22,8 @@ class ViewController: UIViewController,AddItemViewControllerDelegate {
     
     var cellId = "MyCell"
 
+    
+    
     @IBOutlet weak var tableview: UITableView!
     override func viewDidLoad() {
         
@@ -28,17 +31,8 @@ class ViewController: UIViewController,AddItemViewControllerDelegate {
         tableview.delegate = self
         tableview.dataSource = self
         
-         //создаем и сохрваняем юзера
-       let model = ModelUser()
-        model.name = "Rusick"  
-        model.date = "1233333"
-        model.id = 13
-        //dbManager.saveUser(user: model)
-        
-        //создаем дом и добавляем в массив дома нашего юзера(пример отношений один ко многим)
-         let house = House()
-        house.users.append(model)
-        dbManager.saveUser(user: house)
+         
+        self.arr = self.dbManager.obtainUser()
         tableview.register(UINib(nibName: "UserCell", bundle: nil), forCellReuseIdentifier: "UserCell")
     }
     
@@ -47,35 +41,32 @@ class ViewController: UIViewController,AddItemViewControllerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
      
-        let models = dbManager.obtainHouses()
-               print("\(models)")
-        if let lastModel = models.last {
-            dbManager.removeObject(object: lastModel )
-        }
+       
     }
-    
-    
-    
-    
+  
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let models = dbManager.obtainHouses()
-        print("\(models)")
-        
     }
-
+    //MARK: - обнуление всей базы данных
+     
+    @IBAction func deleteAllBarButtonItem(_ sender: Any) {
+        self.dbManager.remoweAllObject()// обнуление базы полностью
+        arr = [] //обнуление текущего массива в таблице
+    }
+    
    
     
     func AddUser(name: String,date: String,id: Int) {
-//        let item = ModelUser(name: name, date: date, id: id)
-//        arr.append(item)
+        let item = ModelUser()
+        item.date = date
+        item.id = id
+        item.name = name
+        arr.append(item)
     }
     
     
-    @IBAction func adUserButton(_ sender: UIBarButtonItem) {
-        
-    }
+  
     
    
 
@@ -100,7 +91,15 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
+            
+             //удаление из базы данных
+            let obj = arr[indexPath.row]
+            self.dbManager.removeObject(object: obj)
+            //удаление из массива
             arr.remove(at: indexPath.row)
+           
+           
+            
         }
     }
    

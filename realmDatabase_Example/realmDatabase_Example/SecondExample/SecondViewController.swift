@@ -7,8 +7,12 @@
 //
 
 import UIKit
+import RealmSwift
 
 class SecondViewController: UIViewController {
+    
+    //MARK: - ссылка на базу данных
+    let realm = try! Realm(configuration: .defaultConfiguration)
     
     var items = [SecondModel]() {
         didSet {
@@ -24,6 +28,9 @@ class SecondViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource =  self
         tableView.register(UINib(nibName: "SecondCell", bundle: nil), forCellReuseIdentifier: "SecondCell")
+        
+        //MARK: - извлечение данных из реалм в наш массив при загрузке вью
+        items = Array( realm.objects(SecondModel.self))
     }
     
     @IBAction func addItem(_ sender: Any) {
@@ -33,8 +40,7 @@ class SecondViewController: UIViewController {
         }
         let action = UIAlertAction(title: "Сохранить", style: .default) { (action) in
             let text = alert.textFields?[0].text
-            let item = SecondModel(name: text!)
-            self.items.append(item)
+            self.saveItem(name: text!)
         }
         let cancel = UIAlertAction(title: "Выйти", style: .destructive, handler: nil)
         alert.addAction(action)
@@ -42,10 +48,19 @@ class SecondViewController: UIViewController {
         present(alert,animated: true,completion: nil)
     }
     
+    //MARK: - функция  сохранение данных в массив и в базу данных
     
     func saveItem(name: String) {
-        let item = SecondModel(name: name)
-        items.append(item)
+        
+        let item = SecondModel()
+        item.id = UUID().uuidString
+        item.name = name
+        items.append(item)//добавляем в массив
+        
+        try! realm.write {
+            realm.add(item)//добавляем в базу
+        }
+        
     }
     
 
@@ -63,8 +78,15 @@ extension SecondViewController: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        let editingRow = items[indexPath.row]//удаляемый элемент
+        
         if editingStyle == .delete {
-            items.remove(at: indexPath.row)
+            //MARK: - удаление элеиентов из базы данных и массива
+            try! self.realm.write {
+                self.realm.delete(editingRow)
+                items.remove(at: indexPath.row)
+            }
         }
     }
     

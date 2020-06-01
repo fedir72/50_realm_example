@@ -12,6 +12,6 @@ import RealmSwift
 
 @objcMembers
 class House: Object {
-    //list внутренний класс(контейнер) у реалм для отображения связей 
+    //list внутренний  контейнер у реалм для отображения связей 
     var users = List<ModelUser>()
 }

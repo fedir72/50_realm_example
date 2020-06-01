@@ -7,13 +7,14 @@
 //
 
 import Foundation
+import RealmSwift
 
-class SecondModel {
-    let name: String
-    let id : String
-    init(name: String) {
-        self.name = name
-        self.id = UUID().uuidString
-    }
+
+
+@objcMembers
+class SecondModel : Object {
+    
+    dynamic var name: String = ""
+    dynamic var id : String = ""
     
 }
